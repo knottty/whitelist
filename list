@@ -1,1 +1,222 @@
-print("hi")
+createNativeThread(function()
+hwid = tostring(os.getenv("PROCESSOR_IDENTIFIER")..os.getenv("USERNAME")..os.getenv("COMPUTERNAME")..os.getenv("PROCESSOR_LEVEL")..os.getenv("PROCESSOR_REVISION"))
+local userList = getInternet().getURL("https://raw.githubusercontent.com/knottty/whitelist/master/hwid")
+
+if string.find(userList,hwid) then
+successLogin = false;
+else
+if string.find(userList,hwid) then
+successLogin = true;
+end
+end
+
+if string.find(userList,hwid,1,true) then
+synchronize(function() UDF1.Show() end)
+else
+synchronize(function() showMessage("if u premium, give me ur hwid, login failed!") end)
+end
+end)
+PROCESS_NAME = 'PixelWorlds.exe'
+--------
+-------- Auto Attach
+--------
+local autoAttachTimer = nil ---- variable to hold timer object
+local autoAttachTimerInterval = 1000 ---- Timer intervals are in milliseconds
+local autoAttachTimerTicks = 0 ---- variable to count number of times the timer has run
+local autoAttachTimerTickMax = 5000 ---- Set to zero to disable ticks max
+local function autoAttachTimer_tick(timer) ---- Timer tick call back
+        ---- Destroy timer if max ticks is reached
+	if autoAttachTimerTickMax > 0 and autoAttachTimerTicks >= autoAttachTimerTickMax then
+		timer.destroy()
+	end
+        ---- Check if process is running
+	if getProcessIDFromProcessName(PROCESS_NAME) ~= nil then
+		timer.destroy() ---- Destroy timer
+		openProcess(PROCESS_NAME) ---- Open the process
+        UDF1.CELabel11.visible = true
+        UDF1.CELabel10.visible = false
+	end
+	autoAttachTimerTicks = autoAttachTimerTicks + 1 ---- Increase ticks
+end
+autoAttachTimer = createTimer(getMainForm()) ---- Create timer with the main form as it's parent
+autoAttachTimer.Interval = autoAttachTimerInterval ---- Set timer interval
+autoAttachTimer.OnTimer = autoAttachTimer_tick ---- Set timer tick call back
+
+
+
+
+function UDF1_CEPanel3Click(sender)
+openProcess(PROCESS_NAME)
+end
+
+function checkKeys(timer)
+  if (isKeyPressed(VK_SHIFT)) then
+results=AOBScan("40 53 48 83 EC 40 48 63 D9 80 3D B3 AE 30 02 00 75 50 48 8B 05 37 9A 30 02 48 63 90 B8 00 00 00 48 8B 05 01 9A 30 02 8B 8C 02 68 1D 01 00 45 33 C0 4C 89 44 24 20 4C 89 44 24 28 4C 89 44 24 30", "*W-C*X") --поиск
+if (results~=nil) then
+count=stringlist_getCount(results)
+if (count>0) then
+for i = 0, (count-1), 1 do
+acaddress =stringlist_getString(results,i)
+writeBytes(acaddress ,0xC3) -- замена
+end
+end
+end
+  else
+results=AOBScan("C3 53 48 83 EC 40 48 63 D9 80 3D B3 AE 30 02 00 75 50 48 8B 05 37 9A 30 02 48 63 90 B8 00 00 00 48 8B 05 01 9A 30 02 8B 8C 02 68 1D 01 00 45 33 C0 4C 89 44 24 20 4C 89 44 24 28 4C 89 44 24 30", "*W-C*X") --поиск
+if (results~=nil) then
+count=stringlist_getCount(results)
+if (count>0) then
+for i = 0, (count-1), 1 do
+acaddress =stringlist_getString(results,i)
+writeBytes(acaddress ,0x40) -- замена
+end
+end
+end
+end
+end
+
+
+function UDF1_CECheckbox7Change(sender)
+if (checkbox_getState(UDF1.CECheckbox7) ==1) then
+t=createTimer(nil)
+timer_setInterval(t, 1)
+timer_onTimer(t, checkKeys)
+timer_setEnabled(t, true)
+else
+t=createTimer(nil)
+timer_setInterval(t, 1)
+timer_onTimer(t, checkKeys)
+timer_setEnabled(t, false)
+end
+end
+
+
+function UDF1_CECheckbox1Change(sender) -- god mode
+if (checkbox_getState(UDF1.CECheckbox1) ==1) then
+results=AOBScan("4C 8B DC 49 89 5B 08 49 89 6B 10 49 89 73 18 57 41 56 41 57 48 83 EC 60 0F 29 74 24 50 45 0F B6 F1 49 8B D8 8B F2 48 8B E9 45 33 FF 44 38 3D 92 11 37 02 75 4B 48 8B 05 24 FF 36 02 4C 63 80 B8", "*W-C*X") --поиск
+if (results~=nil) then
+count=stringlist_getCount(results)
+if (count>0) then
+for i = 0, (count-1), 1 do
+acaddress =stringlist_getString(results,i)
+writeBytes(acaddress ,0xC3) -- замена
+end
+else
+object_destroy(results)
+writeBytes(acaddress ,0x4C, 0x8B, 0xDC) --
+results=nil
+end
+end
+else
+results=AOBScan("C3 8B DC 49 89 5B 08 49 89 6B 10 49 89 73 18 57 41 56 41 57 48 83 EC 60 0F 29 74 24 50 45 0F B6 F1 49 8B D8 8B F2 48 8B E9 45 33 FF 44 38 3D 92 11 37 02 75 4B 48 8B 05 24 FF 36 02 4C 63 80 B8", "*W-C*X") --поиск
+if (results~=nil) then
+count=stringlist_getCount(results)
+if (count>0) then
+for i = 0, (count-1), 1 do
+acaddress =stringlist_getString(results,i)
+writeBytes(acaddress ,0x4C) -- замена
+end
+end
+end
+end
+end
+
+function UDF1_CECheckbox2Change(sender)
+if (checkbox_getState(UDF1.CECheckbox2) ==1) then
+results=AOBScan("F3 0F 10 83 0? 01 00 00 0F 57 F6 0F 2F C6 77 0D 80 BB ?? 01 00 00 00 0F 84 ??03 00 00 80 3D ??", "*W-C*X") --поиск
+if (results~=nil) then
+count=stringlist_getCount(results)
+if (count>0) then
+for i = 0, (count-1), 1 do
+acaddress =stringlist_getString(results,i)
+writeBytes(acaddress ,0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90) -- замена
+end
+else
+object_destroy(results)
+writeBytes(acaddress ,0xF3, 0x0F, 0x10, 0x83, 0x00, 0x01, 0x00, 0x00) --
+results=nil
+end
+end
+function checkEnd(timer)
+writeBytes(acaddress ,0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90) -- замена
+
+end
+
+else
+writeBytes(acaddress ,0xF3, 0x0F, 0x10, 0x83, 0x00, 0x01, 0x00, 0x00)
+end
+end
+
+--run
+function UDF1_CECheckbox3Change(sender)
+if (checkbox_getState(UDF1.CECheckbox3) ==1) then
+results=AOBScan("40 53 48 83 EC 40 48 63 D9 80 3D B3 AE 30 02 00 75 50 48 8B 05 37 9A 30 02 48 63 90 B8 00 00 00 48 8B 05 01 9A 30 02 8B 8C 02 68 1D 01 00 45 33 C0 4C 89 44 24 20 4C 89 44 24 28 4C 89 44 24 30", "*W-C*X") --поиск
+if (results~=nil) then
+count=stringlist_getCount(results)
+if (count>0) then
+for i = 0, (count-1), 1 do
+acaddress =stringlist_getString(results,i)
+writeBytes(acaddress ,0xC3) -- замена
+end
+end
+end
+else
+results=AOBScan("C3 53 48 83 EC 40 48 63 D9 80 3D B3 AE 30 02 00 75 50 48 8B 05 37 9A 30 02 48 63 90 B8 00 00 00 48 8B 05 01 9A 30 02 8B 8C 02 68 1D 01 00 45 33 C0 4C 89 44 24 20 4C 89 44 24 28 4C 89 44 24 30", "*W-C*X") --поиск
+if (results~=nil) then
+count=stringlist_getCount(results)
+if (count>0) then
+for i = 0, (count-1), 1 do
+acaddress =stringlist_getString(results,i)
+writeBytes(acaddress ,0x40) -- замена
+end
+end
+end
+end
+end
+
+function UDF1_CECheckbox4Change(sender)
+if (checkbox_getState(UDF1.CECheckbox4) ==1) then
+autoAssemble([[
+AIBase.Update:
+db C3
+]]);
+else
+autoAssemble([[
+AIBase.Update:
+db 48 83 EC 28
+]]);
+end
+end
+
+function UDF1_CECheckbox5Change(sender)
+if (checkbox_getState(UDF1.CECheckbox5) ==1) then
+autoAssemble([[
+GameAssembly.il2cpp_property_get_flags+1F90:
+db 90 90 90 90 90 90 90
+]]);
+else
+autoAssemble([[
+GameAssembly.il2cpp_property_get_flags+1F90:
+db 0F 10 81 CC 00 00 00
+]]);
+end
+end
+
+
+function UDF1_CECheckbox6Change(sender)
+if (checkbox_getState(UDF1.CECheckbox6) ==1) then
+autoAssemble([[
+"GameAssembly.dll"+398076:
+db 8B 44 C2 10
+]]);
+else
+autoAssemble([[
+"GameAssembly.dll"+398076:
+db 8B 44 C2 20
+]]);
+end
+end
+tEnd=createTimer(nil)
+timer_setInterval(tEnd, 100)
+timer_onTimer(tEnd, checkEnd)
+timer_setEnabled(tEnd, true)
